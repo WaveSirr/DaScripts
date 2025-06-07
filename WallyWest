@@ -1,0 +1,242 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+pcall(function()
+	local hotbarFrame = playerGui:WaitForChild("Hotbar"):WaitForChild("Backpack"):WaitForChild("Hotbar")
+	local moveNames = {
+		["1"] = "Speed Force",
+		["2"] = "Timeline Travel",
+		["3"] = "Kinetic Hurl",
+		["4"] = "Phase Strike"
+	}
+	for slot, name in pairs(moveNames) do
+		local toolNameLabel = hotbarFrame:WaitForChild(slot):WaitForChild("Base"):WaitForChild("ToolName")
+		toolNameLabel.Text = name
+	end
+end)
+
+pcall(function()
+	local barGui = playerGui:WaitForChild("Bar")
+	local magicHealthFrame = barGui:WaitForChild("MagicHealth")
+	local ultTextLabel = magicHealthFrame:WaitForChild("TextLabel")
+	ultTextLabel.Text = "I AM SPEED"
+end)
+
+-- [[MOVE 1]]
+
+local originalAnimationId = 12273188754
+local newAnimationId = 13560306510
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:WaitForChild("Animator")
+
+local newAnimation = Instance.new("Animation")
+newAnimation.AnimationId = "rbxassetid://" .. newAnimationId
+
+local function onAnimationPlayed(animationTrack)
+    if animationTrack.Animation.AnimationId == "rbxassetid://" .. originalAnimationId then
+        -- Stop all currently playing animations to prevent overlap
+        for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+            track:Stop(0.1)
+        end
+
+        -- Load the new animation onto the Animator
+        local newTrack = animator:LoadAnimation(newAnimation)
+
+        -- Play the new animation and adjust its properties
+        newTrack:Play(0.1)
+        newTrack:AdjustSpeed(2.35)
+        newTrack.TimePosition = 0
+
+    end
+end
+
+humanoid.AnimationPlayed:Connect(onAnimationPlayed)
+
+local Players = game:GetService("Players")
+
+--//--------------- CONFIGURATION ---------------//--
+
+-- The Animation ID that will trigger the teleport sequence.
+local TRIGGER_ANIMATION_ID = "rbxassetid://13560306510"
+
+-- The list of coordinates to teleport between.
+local teleportLocations = {
+    Vector3.new(261.3, 439.5, 295.7),
+    Vector3.new(-307.6, 629.5, 58.3),
+    Vector3.new(-637.0, 691.3, 524.9),
+    Vector3.new(138.8, 440.7, 0.0)
+}
+
+-- The number of seconds to wait between each teleport (the fast speed).
+local switchSpeed = 0.65
+
+--//--------------- SCRIPT LOGIC ---------------//--
+
+-- Get services and the local player and wait for their character to exist
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- State variable to prevent the sequence from running multiple times at once
+local isTeleporting = false
+
+-- This function contains the actual teleport logic
+local function startTeleportSequence()
+    -- Debounce: If the sequence is already running, do nothing.
+    if isTeleporting then return end
+    isTeleporting = true
+
+    print("Trigger animation detected! Starting teleport sequence.")
+
+    -- Loop through each location in the table once
+    for index, location in ipairs(teleportLocations) do
+        -- If the character is somehow gone, stop the sequence
+        if not character or not character.PrimaryPart then
+            warn("Character was lost mid-sequence.")
+            break
+        end
+
+        -- Teleport the character
+        character:SetPrimaryPartCFrame(CFrame.new(location))
+
+        -- Wait before moving to the next location.
+        -- This logic is MODIFIED to handle the special 2-second delay.
+        if index < #teleportLocations then -- This check prevents waiting after the final teleport.
+            
+            -- Check if we are at the second-to-last position.
+            if index == #teleportLocations - 1 then
+                -- If so, wait for 2 seconds before the final teleport.
+                task.wait(2)
+            else
+                -- Otherwise, use the normal fast switchSpeed.
+                task.wait(switchSpeed)
+            end
+        end
+    end
+
+    print("Teleport sequence finished.")
+    -- Allow the sequence to be triggered again
+    isTeleporting = false
+end
+
+-- Listen for an animation to be played on the character's humanoid
+humanoid.AnimationPlayed:Connect(function(animationTrack)
+    -- Check if the played animation's ID matches our trigger ID
+    if animationTrack.Animation.AnimationId == TRIGGER_ANIMATION_ID then
+        -- If it matches, start the teleport sequence
+        startTeleportSequence()
+    end
+end)
+
+-- [[MOVE 2]]
+
+local originalAnimationId = 12296113986
+local newAnimationId = 18464372850
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local animator = humanoid:WaitForChild("Animator")
+
+local newAnimation = Instance.new("Animation")
+newAnimation.AnimationId = "rbxassetid://" .. newAnimationId
+
+local function onAnimationPlayed(animationTrack)
+    if animationTrack.Animation.AnimationId == "rbxassetid://" .. originalAnimationId then
+        -- Stop all currently playing animations to prevent overlap
+        for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+            track:Stop(0.1)
+        end
+
+        -- Load the new animation onto the Animator
+        local newTrack = animator:LoadAnimation(newAnimation)
+
+        -- Play the new animation and adjust its properties
+        newTrack:Play(0.1)
+        newTrack:AdjustSpeed(1.35)
+        newTrack.TimePosition = 0
+
+    end
+end
+
+humanoid.AnimationPlayed:Connect(onAnimationPlayed)
+
+--//--------------- CONFIGURATION ---------------//--
+
+-- The Animation ID that will trigger THIS teleport sequence.
+local TRIGGER_ANIMATION_ID = "rbxassetid://18464372850"
+
+-- The list of coordinates to teleport between for this sequence.
+local teleportLocations = {
+    Vector3.new(261.3, 439.5, 295.7),
+    Vector3.new(-307.6, 629.5, 58.3),
+    Vector3.new(261.3, 200, 295.7),
+    Vector3.new(138.8, 500, 0.0) -- The final coordinate
+}
+
+-- The number of seconds to wait between each teleport (the fast speed).
+local switchSpeed = 0.65
+
+--//--------------- SCRIPT LOGIC ---------------//--
+
+-- Get services and the local player and wait for their character to exist
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- State variable to prevent the sequence from running multiple times at once
+local isTeleporting = false
+
+-- This function contains the actual teleport logic
+local function startTeleportSequence()
+    -- Debounce: If the sequence is already running, do nothing.
+    if isTeleporting then return end
+    isTeleporting = true
+
+    print("Trigger animation detected! Starting teleport sequence.")
+
+    -- Loop through each location in the table once
+    for index, location in ipairs(teleportLocations) do
+        -- If the character is somehow gone, stop the sequence
+        if not character or not character.PrimaryPart then
+            warn("Character was lost mid-sequence.")
+            break
+        end
+
+        -- Teleport the character
+        character:SetPrimaryPartCFrame(CFrame.new(location))
+
+        -- Wait before moving to the next location.
+        -- This logic is MODIFIED to handle the special 2-second delay.
+        if index < #teleportLocations then -- This check prevents waiting after the final teleport.
+            
+            -- Check if we are at the second-to-last position.
+            if index == #teleportLocations - 1 then
+                -- If so, wait for 2 seconds before the final teleport.
+                task.wait(2)
+            else
+                -- Otherwise, use the normal fast switchSpeed.
+                task.wait(switchSpeed)
+            end
+        end
+    end
+
+    print("Teleport sequence finished.")
+    -- Allow the sequence to be triggered again
+    isTeleporting = false
+end
+
+-- Listen for an animation to be played on the character's humanoid
+humanoid.AnimationPlayed:Connect(function(animationTrack)
+    -- Check if the played animation's ID matches our trigger ID
+    if animationTrack.Animation.AnimationId == TRIGGER_ANIMATION_ID then
+        -- If it matches, start the teleport sequence
+        startTeleportSequence()
+    end
+end)
